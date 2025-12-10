@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Управление пользователями - Secrets Manager{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-warning text-dark">
+            <h4 class="mb-0"><i class="bi bi-people-fill"></i> Управление пользователями</h4>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-warning">
+                <i class="bi bi-exclamation-triangle"></i> 
+                <strong>Заглушка:</strong> Список пользователей будет доступен после добавления API эндпоинта
+            </div>
+
+            <p class="text-muted">
+                Здесь будет отображаться список всех пользователей системы с возможностью редактирования и удаления.
+            </p>
+
+            <a href="{{ url_for('create_user') }}" class="btn btn-warning">
+                <i class="bi bi-person-plus"></i> Создать нового пользователя
+            </a>
+            <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Назад
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

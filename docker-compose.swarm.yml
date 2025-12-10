@@ -1,0 +1,123 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: secrets_db
+      POSTGRES_USER: secrets_user
+      POSTGRES_PASSWORD: secure_db_password_2024
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - database_network
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+
+  secrets-service:
+    image: secrets-service:latest
+    environment:
+      DATABASE_URL: postgresql://secrets_user:secure_db_password_2024@postgres:5432/secrets_db
+      SECRET_KEY: your-super-secret-encryption-key-change-this
+      JWT_SECRET: jwt-signing-key-change-this-too
+    networks:
+      - backend_network
+      - database_network
+    deploy:
+      replicas: 3  # 3 реплики для отказоустойчивости
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+
+  auth-service:
+    image: auth-service:latest
+    environment:
+      DATABASE_URL: postgresql://secrets_user:secure_db_password_2024@postgres:5432/secrets_db
+      JWT_SECRET: jwt-signing-key-change-this-too
+      JWT_EXPIRATION: 3600
+    networks:
+      - backend_network
+      - database_network
+    deploy:
+      replicas: 2
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 256M
+
+  audit-service:
+    image: audit-service:latest
+    environment:
+      DATABASE_URL: postgresql://secrets_user:secure_db_password_2024@postgres:5432/secrets_db
+    volumes:
+      - audit_logs:/app/logs
+    networks:
+      - backend_network
+      - database_network
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 256M
+
+  api-gateway:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    configs:
+      - source: nginx_config
+        target: /etc/nginx/nginx.conf
+    networks:
+      - frontend_network
+      - backend_network
+    deploy:
+      replicas: 2
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints:
+          - node.role == worker
+
+networks:
+  frontend_network:
+    driver: overlay
+  backend_network:
+    driver: overlay
+  database_network:
+    driver: overlay
+
+volumes:
+  postgres_data:
+  audit_logs:
+
+configs:
+  nginx_config:
+    file: ./nginx/nginx.conf

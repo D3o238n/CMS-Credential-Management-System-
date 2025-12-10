@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Вход - Secrets Manager{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center align-items-center" style="min-height: 80vh;">
+        <div class="col-md-5">
+            <div class="card">
+                <div class="card-body p-5">
+                    <div class="text-center mb-4">
+                        <i class="bi bi-shield-lock-fill text-primary" style="font-size: 3rem;"></i>
+                        <h3 class="mt-3">Вход в систему</h3>
+                        <p class="text-muted">Система управления учетными данными</p>
+                    </div>
+
+                    <form method="POST" action="{{ url_for('login') }}">
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" required 
+                                   placeholder="admin@company.com">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Пароль</label>
+                            <input type="password" class="form-control" id="password" name="password" required
+                                   placeholder="••••••••">
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 mb-3">
+                            <i class="bi bi-box-arrow-in-right"></i> Войти
+                        </button>
+                    </form>
+
+                    <hr class="my-4">
+
+                    <div class="alert alert-info mb-0">
+                        <small>
+                            <strong>Тестовые аккаунты:</strong><br>
+                            <code>admin@company.com</code> / <code>admin123</code><br>
+                            <code>developer@company.com</code> / <code>dev123</code>
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
