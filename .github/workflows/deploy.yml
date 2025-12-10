@@ -8,7 +8,7 @@ on:
 
 env:
   DOCKER_REGISTRY: docker.io
-  DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+  
 
 jobs:
   # Job 1: Линтинг и тестирование
